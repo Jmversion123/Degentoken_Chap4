@@ -3,6 +3,7 @@
 
 ## Description:
 GamerToken is a Solidity smart contract that implements a simple ERC20 token called "Gamer" (GMR). This token is designed for use within a gaming platform, allowing players to earn, transfer, redeem, and burn tokens for various in-game items and rewards. The contract also includes functionalities for minting new tokens and checking token balances.
+(for reference: I used Gamer token instead of Degen token, but it's still the same function and variables that needed) 
 
 ## Features:
 1. **Minting new tokens:** The owner of the contract can create new tokens and distribute them to players as rewards.
