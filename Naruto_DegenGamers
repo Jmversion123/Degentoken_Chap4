@@ -1,0 +1,119 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract GamerToken is ERC20, Ownable {
+
+    // Mapping to store the prices of items in the Naruto Shippuden store
+    mapping(uint256 => uint256) public NarutoShippuden;
+
+    // Mapping to store each user's ninja rank
+    mapping(address => string) public ninjaRank;
+
+    // Mapping to store each user's chakra level
+    mapping(address => uint256) public chakraLevel;
+
+    // Mapping to store each user's jutsu points
+    mapping(address => uint256) public jutsuPoints;
+
+    // Modifier to restrict functions to only the owner, referred to as "Hokage"
+    modifier onlyHokage() {
+        require(owner() == msg.sender, "Only the Hokage can perform this action.");
+        _;
+    }
+
+    // Constructor to initialize the token and item prices
+    constructor() ERC20("Gamer", "GMR") Ownable(msg.sender) {
+        NarutoShippuden[1] = 100;
+        NarutoShippuden[2] = 60;
+        NarutoShippuden[3] = 30;
+        NarutoShippuden[4] = 10;
+        NarutoShippuden[5] = 50;
+        NarutoShippuden[6] = 40;
+        NarutoShippuden[7] = 20;
+    }
+
+    // Function to mint new tokens, restricted to the owner
+    function mintGMR(address recipient, uint256 amount) public onlyHokage {
+        _mint(recipient, amount);
+    }
+
+    // Function to transfer tokens with custom transfer logic
+    function transferGMR(address recipient, uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "TransferJutsu Failed: Insufficient chakra.");
+        approveTransferJutsu(msg.sender, amount);
+        performTransferJutsu(msg.sender, recipient, amount);
+    }
+
+    // Internal function to approve tokens for transfer
+    function approveTransferJutsu(address owner, uint256 amount) internal {
+        approve(owner, amount);
+    }
+
+    // Internal function to perform the actual transfer of tokens
+    function performTransferJutsu(address sender, address recipient, uint256 amount) internal {
+        transferFrom(sender, recipient, amount);
+    }
+
+    // Function to list available items in the Naruto Shippuden store
+    function listItems() external pure returns (string memory) {
+        return "The items on sale: {1} Gamer NFT (100) {2} Gamer T-shirt & Hoodie (60) {3} Random IN-GAME Item (30) {4} Gamer Sticker (10) {5} Ninja Headband (50) {6} Kunai Set (40) {7} Shuriken Set (20)";
+    }
+
+    // Function to redeem tokens for items in the Naruto Shippuden store
+    function redeemGMR(uint256 itemId) public {
+        require(NarutoShippuden[itemId] > 0, "Item is not available.");
+        require(itemId <= 7, "Item is not available.");
+        require(balanceOf(msg.sender) >= NarutoShippuden[itemId], "Redeem Failed: Insufficient chakra.");
+        transfer(owner(), NarutoShippuden[itemId]);
+    }
+
+    // Function to burn tokens, effectively reducing the total supply
+    function burnGMR(uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Burn Failed: Insufficient chakra.");
+        approveTransferJutsu(msg.sender, amount);
+        _burn(msg.sender, amount);
+    }
+
+    // Function to check the balance of the caller
+    function checkBalance() external view returns (uint256) {
+        return this.balanceOf(msg.sender);
+    }
+
+    // Function to set the decimals of the token to 0 (no fractional units)
+    function decimals() override public pure returns (uint8) {
+        return 0;
+    }
+
+    // Function to set a user's ninja rank
+    function setNinjaRank(address user, string memory rank) public onlyHokage {
+        ninjaRank[user] = rank;
+    }
+
+    // Function to get a user's ninja rank
+    function getNinjaRank(address user) public view returns (string memory) {
+        return ninjaRank[user];
+    }
+
+    // Function to set a user's chakra level
+    function setChakraLevel(address user, uint256 level) public onlyHokage {
+        chakraLevel[user] = level;
+    }
+
+    // Function to get a user's chakra level
+    function getChakraLevel(address user) public view returns (uint256) {
+        return chakraLevel[user];
+    }
+
+    // Function to set a user's jutsu points
+    function setJutsuPoints(address user, uint256 points) public onlyHokage {
+        jutsuPoints[user] = points;
+    }
+
+    // Function to get a user's jutsu points
+    function getJutsuPoints(address user) public view returns (uint256) {
+        return jutsuPoints[user];
+    }
+}
